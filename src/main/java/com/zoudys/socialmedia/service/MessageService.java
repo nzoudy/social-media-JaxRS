@@ -1,6 +1,7 @@
 package com.zoudys.socialmedia.service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +12,6 @@ import com.zoudys.socialmedia.model.Profile;
 public class MessageService {
 
 	private static Map<Long, Message> messages = DatabaseClass.getMessages();
-	private static Map<Long, Profile> profiles = DatabaseClass.getProfiles();
 	
 	public MessageService(){
 		messages.put(1L, new Message(1, "Hello Urbain", "Urbain"));
@@ -21,6 +21,26 @@ public class MessageService {
 	
 	public List<Message> getAllMessages(){
 		return new ArrayList<>(messages.values());
+	}
+	
+	public List<Message> getAllMessagesForYear(int year){
+		List<Message>  messagesForYear = new ArrayList<>();
+		Calendar cal = Calendar.getInstance();
+		for(Message message : messages.values()){
+			cal.setTime(message.getCreated());
+			if(cal.get(Calendar.YEAR) == year){
+				messagesForYear.add(message);
+			}
+		}
+		return messagesForYear;
+	}
+	
+	public List<Message> getAllMessagePaginated(int start, int size){
+		ArrayList<Message> list = new ArrayList<Message>(messages.values());
+		if(start + size > list.size()){
+			return new ArrayList<Message>();
+		}
+		return list.subList(start, start + size);
 	}
 	
 	public Message getMessage(long id){
@@ -42,7 +62,7 @@ public class MessageService {
 	}
 	
 	public Message removeMessage(long id){
-		return messages.remove(id);
+		 return messages.remove(id);
 	}
 	
 	
