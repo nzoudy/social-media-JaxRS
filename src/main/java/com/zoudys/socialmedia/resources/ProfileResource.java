@@ -16,7 +16,7 @@ import com.zoudys.socialmedia.model.Message;
 import com.zoudys.socialmedia.model.Profile;
 import com.zoudys.socialmedia.service.ProfileService;
 
-@Path("/profiles")
+@Path("profiles")
 @Produces(value=MediaType.APPLICATION_JSON)
 @Consumes(value=MediaType.APPLICATION_JSON)
 public class ProfileResource {

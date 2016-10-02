@@ -1,7 +1,9 @@
 package com.zoudys.socialmedia.resources;
 
+import java.net.URI;
 import java.util.List;
 
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -12,8 +14,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import com.zoudys.socialmedia.model.Message;
+import com.zoudys.socialmedia.beans.MessageFilterBean;
 import com.zoudys.socialmedia.service.MessageService;
 
 @Path("/messages")
@@ -21,24 +26,36 @@ import com.zoudys.socialmedia.service.MessageService;
 @Consumes(value=MediaType.APPLICATION_JSON)
 public class MessageResource {
 
-	private MessageService messageService = new MessageService();
+	 MessageService messageService = new MessageService();
 	
 	@GET
-	public List<Message> getMessages(@QueryParam("year") int year, 
-									 @QueryParam("start") int start,
-									 @QueryParam("size") int size){
-		if(year > 0){
-			return messageService.getAllMessagesForYear(year);
+	public List<Message> getMessages(@BeanParam MessageFilterBean filterBean){
+		
+		/*if(filterBean.getYear() > 0){
+			
+			return messageService.getAllMessagesForYear(filterBean.getYear());
 		}
-		if(start >= 0 && size >= 0){
-			return messageService.getAllMessagePaginated(start, size);
-		}
+		if(filterBean.getStart() >= 0 && filterBean.getSize() >= 0){
+			return messageService.getAllMessagePaginated(filterBean.getStart(), filterBean.getSize());
+		}*/
 		return messageService.getAllMessages();
 	}
 	
-	@POST
+	/*@POST
 	public Message addMessage(Message message){
 		return messageService.addMessage(message);
+	}*/
+	
+	@POST
+	public Response addMessage(Message message, UriInfo uriInfo){
+		
+		Message newMessage = messageService.addMessage(message);
+		String newId = String.valueOf(newMessage.getId());
+		URI uri = uriInfo.getAbsolutePathBuilder().path(newId).build();
+		
+		return Response.created(uri)
+				.entity(newMessage)
+				.build();
 	}
 	
 	@PUT
@@ -59,4 +76,12 @@ public class MessageResource {
 	public Message getMessage(@PathParam("messageId") long messageId){
 		return messageService.getMessage(messageId);
 	}
+	
+	// no matter http request made, please delegate works to CommentResource
+	@Path("/{messageId}/comments")
+	public CommentResource getCommentResoure(){
+		return new CommentResource();
+	}
+	
+	
 }

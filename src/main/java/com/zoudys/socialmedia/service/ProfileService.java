@@ -13,6 +13,7 @@ public class ProfileService {
 	
 	public ProfileService() {
 		profiles.put("urbain", new Profile(1L, "urbain", "nzouda", "chimie"));
+		profiles.put("Guy", new Profile(2L, "Geomatique", "Guy", "Fianla"));
 	}
 
 	public List<Profile> getAllProfiles(){
